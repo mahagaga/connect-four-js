@@ -56,13 +56,15 @@ function changePlayer() {
 
 function updateTitle() {
     // Update the UI.
-    if (false && config[currentPlayer + "PlayerName"] === config.them) {
+    $('#player').removeClass().addClass(currentPlayer).text(config[currentPlayer + "PlayerName"]);
+
+    // btw - is it their turn?
+    if (config[currentPlayer + "PlayerName"] === config.them) {
         halt = true;
         letThemMakeAMove();
     } else {
         halt = false;
     }
-    $('#player').removeClass().addClass(currentPlayer).text(config[currentPlayer + "PlayerName"]);
 }
 
 function color(player) {
@@ -81,7 +83,7 @@ function letThemMakeAMove() {
             dropDisc(data);
         })
         .fail(function(error) {
-            alert("error: "+error);
+            alert("They don't move: "+error.content);
         })
         .always(function() {
             halt = false;
@@ -94,7 +96,7 @@ function tellThem(column) {
             alert("success: "+data);
         })
         .fail(function(error) {
-            alert("error: "+error);
+            alert("Can't tell them: "+error.content);
         });
 }
 
@@ -104,7 +106,7 @@ function challengeThem(column) {
             alert("success: "+data);
         })
         .fail(function(error) {
-            alert("error: "+error);
+            alert("Can't challenge them: "+error.content);
         });
 }
 
