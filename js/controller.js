@@ -16,23 +16,17 @@ $(document).ready(function() {
     $('.board button').click(function(e) {
         if (halt) return;
         
-        // Detect the x and y position of the button clicked.
-        //var y_pos = $('.board tr').index($(this).closest('tr'));
+        // Detect the x position of the button clicked.
         var x_pos = $(this).closest('tr').find('td').index($(this).closest('td'));
 
+        // Reject move is column is filled up
         if (positionIsTaken(x_pos, 0)) {
             alert(config.takenMsg);
             return;
         }
 
-        var gameover = dropDisc(x_pos);
-        
-        if (gameover) {
-            $('.board button').unbind('click');
-            $('.play-again').show("slow");
-            return;
-        }
-        changePlayer();
+        // Drop the disc
+        dropDisc(x_pos);
     });
 
     $('.play-again').click(function(e) {

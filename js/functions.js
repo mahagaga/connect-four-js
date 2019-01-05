@@ -10,6 +10,7 @@ function closeModal() {
         case "red": config.redPlayerName = config.you; config.blackPlayerName = config.them; break;
         case "black": config.redPlayerName = config.them; config.blackPlayerName = config.you; break; 
     }
+    challengeThem();
     updateTitle();
 }
 
@@ -57,25 +58,54 @@ function updateTitle() {
     // Update the UI.
     if (false && config[currentPlayer + "PlayerName"] === config.them) {
         halt = true;
-        var color;
-        switch (currentPlayer) {
-            case "red": color="white"; break;
-            case "black": color="black"; break;
-        }
-        $.get( "localhost:8095/best/"+color+"/justdoit")
-            .done(function(data) {
-                alert("success: "+data);
-            })
-            .fail(function(error) {
-                alert("error: "+error);
-            })
-            .always(function() {
-                halt = false;
-            });
+        letThemMakeAMove();
     } else {
         halt = false;
     }
     $('#player').removeClass().addClass(currentPlayer).text(config[currentPlayer + "PlayerName"]);
+}
+
+function color(player) {
+    var color;
+    switch (currentPlayer) {
+        case "red": color="white"; break;
+        case "black": color="black"; break;
+    }
+    return color;
+}
+
+function letThemMakeAMove() {
+    $.get( "localhost:8095/best/"+color(currentPlayer))
+        .done(function(data) {
+            alert("success: "+data);
+            dropDisc(data);
+        })
+        .fail(function(error) {
+            alert("error: "+error);
+        })
+        .always(function() {
+            halt = false;
+        });
+}
+
+function tellThem(column) {
+    $.get( "localhost:8095/move/"+color(currentPlayer)+"/"+column)
+        .done(function(data) {
+            alert("success: "+data);
+        })
+        .fail(function(error) {
+            alert("error: "+error);
+        });
+}
+
+function challengeThem(column) {
+    $.get( "localhost:8095/new")
+        .done(function(data) {
+            alert("success: "+data);
+        })
+        .fail(function(error) {
+            alert("error: "+error);
+        });
 }
 
 /**
@@ -329,22 +359,33 @@ function diagonalWin() {
 }
 
 function dropDisc(x_pos) { //-> gameover:bool
+    
+    tellThem(x_pos);
+
     // Ensure the piece falls to the bottom of the column.
     var y_pos = dropToBottom(x_pos, 0);
 
     addDiscToBoard(currentPlayer, x_pos, y_pos);
     printBoard();
 
+    var gameover = false;
     // Check to see if we have a winner.
     if (verticalWin() || horizontalWin() || diagonalWin()) {
         // Destroy our click listener to prevent further play.
         $('.prefix').text(config.winPrefix);
-        return true;
+        gameover = true;
 
     } else if (gameIsDraw()) {
         // Destroy our click listener to prevent further play.
         $('.message').text(config.drawMsg);
-        return true;
+        gameover = true;
     }
-    return false;
+    
+    // prevent any further action if game is over 
+    if (gameover) {
+        $('.board button').unbind('click');
+        $('.play-again').show("slow");
+    } else { // ... otherwise just change the player
+        changePlayer();
+    }
 }
