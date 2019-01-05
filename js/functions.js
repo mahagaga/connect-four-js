@@ -77,37 +77,49 @@ function color(player) {
 }
 
 function letThemMakeAMove() {
-    $.get( "localhost:8095/best/"+color(currentPlayer))
-        .done(function(data) {
-            alert("success: "+data);
-            dropDisc(data.content);
-        })
-        .fail(function(error) {
-            alert("They don't move: "+error.state());
-        })
-        .always(function() {
-            halt = false;
-        });
+    $.ajax({ 
+        type: 'GET', 
+        url: "http://localhost:8095/best/"+color(currentPlayer), 
+        data: { }, 
+        dataType: 'json',
+        success: function (json) { 
+            //alert("success: "+json.bestmove);
+            dropDisc(json.bestmove);
+        },
+        error: function(error) {
+            alert("They don't move, error.status: "+error.status);
+        }
+    });    
 }
 
 function tellThem(column) {
-    $.get( "localhost:8095/move/"+color(currentPlayer)+"/"+column)
-        .done(function(data) {
-            alert("success: "+data);
-        })
-        .fail(function(error) {
-            alert("Can't tell them: "+error.state());
-        });
+    $.ajax({ 
+        type: 'GET', 
+        url: "http://localhost:8095/move/"+color(currentPlayer)+"/"+column, 
+        data: { }, 
+        dataType: 'json',
+        success: function (json) { 
+            //alert(json.field);
+        },
+        error: function(error) {
+            alert("Can't tell them, error.status: "+error.status);
+        }
+    });    
 }
 
 function challengeThem(column) {
-    $.get( "localhost:8095/new")
-        .done(function(data) {
-            alert("success: "+data);
-        })
-        .fail(function(error) {
-            alert("Can't challenge them: "+error.state());
-        });
+    $.ajax({ 
+        type: 'GET', 
+        url: 'http://127.0.0.1:8095/new', 
+        data: { }, 
+        dataType: 'json',
+        success: function (json) { 
+            //alert(json.field);
+        },
+        error: function(error) {
+            alert("Can't challenge them, error.status: "+error.status);
+        }
+    });  
 }
 
 /**
