@@ -12,11 +12,33 @@
   <script src="js/vars.js"></script>
   <script src="js/functions.js"></script>
   <script src="js/controller.js"></script>
+
 </head>
 <body>
+  <!-- The Modal -->
+  <div id="myModal" class="modal">
+  
+    <!-- Modal content -->
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      Chose a color ("Red" begins) &nbsp;
+      <input type="radio" name="who" value="red" checked="checked"> Red
+      <input type="radio" name="who" value="black"> Black
+    </div>
+  
+  </div>
+  <script>
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = closeModal;
+  </script>
+
   <section class="wrapper">
+    <div id=you style="display: none"></div>
+    <div id=they style="display: none"></div>
     <div class="info">
-      <h1 class="title">Play Connect Four!</h1>
+      <!--h1 class="title">Play Connect Four!</h1-->
       <h2 class="message"><span class="prefix"></span><span id="player" class="player">&nbsp;</span></h2>
       <a href="#" class="play-again" style="display: none;">Play Again</a>
     </div>
@@ -79,6 +101,6 @@
       </tbody>
     </table>
   </section>
-  <a href="https://github.com/bryanbraun/connect-four"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
+  <!--a href="https://github.com/bryanbraun/connect-four"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a-->
 </body>
 </html>

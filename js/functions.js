@@ -1,3 +1,18 @@
+function closeModal() { 
+    $('.modal').css({'display':'none'});
+
+    var selectedVal;
+    var selected = $("input[type='radio'][name='who']:checked");
+    if (selected.length > 0) {
+        selectedVal = selected.val();
+    }
+    switch (selectedVal) {
+        case "red": config.redPlayerName = config.you; config.blackPlayerName = config.them; break;
+        case "black": config.redPlayerName = config.them; config.blackPlayerName = config.you; break; 
+    }
+    updateTitle();
+}
+
 /**
  * A function for adding a disc to our Connect Four board.
  *
@@ -35,8 +50,31 @@ function changePlayer() {
     } else {
         currentPlayer = 'black';
     }
+    updateTitle();
+}
 
+function updateTitle() {
     // Update the UI.
+    if (false && config[currentPlayer + "PlayerName"] === config.them) {
+        halt = true;
+        var color;
+        switch (currentPlayer) {
+            case "red": color="white"; break;
+            case "black": color="black"; break;
+        }
+        $.get( "localhost:8095/best/"+color+"/justdoit")
+            .done(function(data) {
+                alert("success: "+data);
+            })
+            .fail(function(error) {
+                alert("error: "+error);
+            })
+            .always(function() {
+                halt = false;
+            });
+    } else {
+        halt = false;
+    }
     $('#player').removeClass().addClass(currentPlayer).text(config[currentPlayer + "PlayerName"]);
 }
 
@@ -287,5 +325,26 @@ function diagonalWin() {
     }
 
     // No diagonal wins found. Return false.
+    return false;
+}
+
+function dropDisc(x_pos) { //-> gameover:bool
+    // Ensure the piece falls to the bottom of the column.
+    var y_pos = dropToBottom(x_pos, 0);
+
+    addDiscToBoard(currentPlayer, x_pos, y_pos);
+    printBoard();
+
+    // Check to see if we have a winner.
+    if (verticalWin() || horizontalWin() || diagonalWin()) {
+        // Destroy our click listener to prevent further play.
+        $('.prefix').text(config.winPrefix);
+        return true;
+
+    } else if (gameIsDraw()) {
+        // Destroy our click listener to prevent further play.
+        $('.message').text(config.drawMsg);
+        return true;
+    }
     return false;
 }
