@@ -80,10 +80,10 @@ function letThemMakeAMove() {
     $.get( "localhost:8095/best/"+color(currentPlayer))
         .done(function(data) {
             alert("success: "+data);
-            dropDisc(data);
+            dropDisc(data.content);
         })
         .fail(function(error) {
-            alert("They don't move: "+error.content);
+            alert("They don't move: "+error.state());
         })
         .always(function() {
             halt = false;
@@ -96,7 +96,7 @@ function tellThem(column) {
             alert("success: "+data);
         })
         .fail(function(error) {
-            alert("Can't tell them: "+error.content);
+            alert("Can't tell them: "+error.state());
         });
 }
 
@@ -106,7 +106,7 @@ function challengeThem(column) {
             alert("success: "+data);
         })
         .fail(function(error) {
-            alert("Can't challenge them: "+error.content);
+            alert("Can't challenge them: "+error.state());
         });
 }
 
