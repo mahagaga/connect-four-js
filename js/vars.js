@@ -12,9 +12,12 @@
 // @todo: Extra credit. Make this more accessible (keyboard navigation + screen-
 //        reader friendly).
 var config = {
-        blackPlayerName: "Player 1",
-        redPlayerName: "Player 2",
-        startingPlayer: "black", // Choose 'black' or 'red'.
+        initTitle: "Play Connect Four with \"Them\"",
+        you: "Your turn!",
+        them: "Their turn...",
+        blackPlayerName: "",
+        redPlayerName: "",
+        startingPlayer: "red", // Choose 'black' or 'red'.
         takenMsg: "This position is already taken. Please make another choice.",
         drawMsg: "This game is a draw.",
         playerPrefix: "Current Player is: ",
@@ -34,3 +37,6 @@ var board = [[0,0,0,0,0,0,0],
 
 // Set the starting player.
 var currentPlayer = config.startingPlayer;
+
+// Block any clicks while it's their turn.
+var halt = true;

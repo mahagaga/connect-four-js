@@ -1,3 +1,19 @@
+function closeModal() { 
+    $('.modal').css({'display':'none'});
+
+    var selectedVal;
+    var selected = $("input[type='radio'][name='who']:checked");
+    if (selected.length > 0) {
+        selectedVal = selected.val();
+    }
+    switch (selectedVal) {
+        case "red": config.redPlayerName = config.you; config.blackPlayerName = config.them; break;
+        case "black": config.redPlayerName = config.them; config.blackPlayerName = config.you; break; 
+    }
+    challengeThem();
+    updateTitle();
+}
+
 /**
  * A function for adding a disc to our Connect Four board.
  *
@@ -35,9 +51,75 @@ function changePlayer() {
     } else {
         currentPlayer = 'black';
     }
+    updateTitle();
+}
 
+function updateTitle() {
     // Update the UI.
     $('#player').removeClass().addClass(currentPlayer).text(config[currentPlayer + "PlayerName"]);
+
+    // btw - is it their turn?
+    if (config[currentPlayer + "PlayerName"] === config.them) {
+        halt = true;
+        letThemMakeAMove();
+    } else {
+        halt = false;
+    }
+}
+
+function color(player) {
+    var color;
+    switch (currentPlayer) {
+        case "red": color="white"; break;
+        case "black": color="black"; break;
+    }
+    return color;
+}
+
+function letThemMakeAMove() {
+    $.ajax({ 
+        type: 'GET', 
+        url: "http://localhost:8095/best/"+color(currentPlayer), 
+        data: { }, 
+        dataType: 'json',
+        success: function (json) { 
+            //alert("success: "+json.bestmove);
+            dropDisc(json.bestmove);
+        },
+        error: function(error) {
+            alert("They don't move, error.status: "+error.status);
+        }
+    });    
+}
+
+function tellThem(column) {
+    $.ajax({ 
+        type: 'GET', 
+        url: "http://localhost:8095/move/"+color(currentPlayer)+"/"+column, 
+        data: { }, 
+        dataType: 'json',
+        success: function (json) { 
+            //alert(json.field);
+        },
+        error: function(error) {
+            alert("Can't tell them, error.status: "+error.status);
+        }
+    });    
+}
+
+function challengeThem(column) {
+    $.ajax({ 
+        type: 'GET', 
+        url: 'http://127.0.0.1:8095/new', 
+        data: { }, 
+        dataType: 'json',
+        success: function (json) { 
+            //alert(json.field);
+        },
+        error: function(error) {
+            alert("Can't challenge them, error.status: "+error.status);
+        }
+    });  
 }
 
 /**
@@ -288,4 +370,36 @@ function diagonalWin() {
 
     // No diagonal wins found. Return false.
     return false;
+}
+
+function dropDisc(x_pos) { //-> gameover:bool
+    
+    tellThem(x_pos);
+
+    // Ensure the piece falls to the bottom of the column.
+    var y_pos = dropToBottom(x_pos, 0);
+
+    addDiscToBoard(currentPlayer, x_pos, y_pos);
+    printBoard();
+
+    var gameover = false;
+    // Check to see if we have a winner.
+    if (verticalWin() || horizontalWin() || diagonalWin()) {
+        // Destroy our click listener to prevent further play.
+        $('.prefix').text(config.winPrefix);
+        gameover = true;
+
+    } else if (gameIsDraw()) {
+        // Destroy our click listener to prevent further play.
+        $('.message').text(config.drawMsg);
+        gameover = true;
+    }
+    
+    // prevent any further action if game is over 
+    if (gameover) {
+        $('.board button').unbind('click');
+        $('.play-again').show("slow");
+    } else { // ... otherwise just change the player
+        changePlayer();
+    }
 }
