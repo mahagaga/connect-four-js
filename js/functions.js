@@ -11,7 +11,6 @@ function closeModal() {
         case "black": config.redPlayerName = config.them; config.blackPlayerName = config.you; break; 
     }
     challengeThem();
-    updateTitle();
 }
 
 /**
@@ -116,6 +115,7 @@ function challengeThem(column) {
         success: function (json) { 
             //alert(json.field);
             config.gameid = json.gameid;
+            updateTitle();
         },
         error: function(error) {
             alert("Can't challenge them, error.status: "+error.status);
