@@ -115,7 +115,7 @@ function challengeThem(column) {
         dataType: 'json',
         success: function (json) { 
             //alert(json.field);
-            gameid = json.gameid;
+            config.gameid = json.gameid;
         },
         error: function(error) {
             alert("Can't challenge them, error.status: "+error.status);
