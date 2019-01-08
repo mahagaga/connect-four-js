@@ -15,6 +15,7 @@ var config = {
         initTitle: "Play Connect Four with \"Them\"",
         you: "Your turn!",
         them: "Their turn...",
+        gameserver: "http://localhost:8095",
         blackPlayerName: "",
         redPlayerName: "",
         startingPlayer: "red", // Choose 'black' or 'red'.
@@ -40,3 +41,6 @@ var currentPlayer = config.startingPlayer;
 
 // Block any clicks while it's their turn.
 var halt = true;
+
+// The game id
+var gameid;

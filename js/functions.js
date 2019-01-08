@@ -79,7 +79,7 @@ function color(player) {
 function letThemMakeAMove() {
     $.ajax({ 
         type: 'GET', 
-        url: "http://localhost:8095/best/"+color(currentPlayer), 
+        url: config.gameserver+"/best/"+gameid+"/"+color(currentPlayer), 
         data: { }, 
         dataType: 'json',
         success: function (json) { 
@@ -95,7 +95,7 @@ function letThemMakeAMove() {
 function tellThem(column) {
     $.ajax({ 
         type: 'GET', 
-        url: "http://localhost:8095/move/"+color(currentPlayer)+"/"+column, 
+        url: config.gameserver+"/move/"+gameid+"/"+color(currentPlayer)+"/"+column, 
         data: { }, 
         dataType: 'json',
         success: function (json) { 
@@ -110,11 +110,12 @@ function tellThem(column) {
 function challengeThem(column) {
     $.ajax({ 
         type: 'GET', 
-        url: 'http://127.0.0.1:8095/new', 
+        url: config.gameserver+"/new", 
         data: { }, 
         dataType: 'json',
         success: function (json) { 
             //alert(json.field);
+            gameid = json.gameid;
         },
         error: function(error) {
             alert("Can't challenge them, error.status: "+error.status);
@@ -387,6 +388,7 @@ function dropDisc(x_pos) { //-> gameover:bool
     if (verticalWin() || horizontalWin() || diagonalWin()) {
         // Destroy our click listener to prevent further play.
         $('.prefix').text(config.winPrefix);
+        $('#player').text(config[currentPlayer + "PlayerName"] === config.you ? "you" : "them");
         gameover = true;
 
     } else if (gameIsDraw()) {
