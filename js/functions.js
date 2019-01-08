@@ -79,7 +79,7 @@ function color(player) {
 function letThemMakeAMove() {
     $.ajax({ 
         type: 'GET', 
-        url: config.gameserver+"/best/"+gameid+"/"+color(currentPlayer), 
+        url: config.gameserver+"/best/"+config.gameid+"/"+color(currentPlayer), 
         data: { }, 
         dataType: 'json',
         success: function (json) { 
@@ -95,7 +95,7 @@ function letThemMakeAMove() {
 function tellThem(column) {
     $.ajax({ 
         type: 'GET', 
-        url: config.gameserver+"/move/"+gameid+"/"+color(currentPlayer)+"/"+column, 
+        url: config.gameserver+"/move/"+config.gameid+"/"+color(currentPlayer)+"/"+column, 
         data: { }, 
         dataType: 'json',
         success: function (json) { 
