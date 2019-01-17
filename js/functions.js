@@ -76,43 +76,43 @@ function color(player) {
 }
 
 function letThemMakeAMove() {
-    $.ajax({ 
-        type: 'GET', 
-        url: config.gameserver+"/best/"+config.gameid+"/"+color(currentPlayer), 
-        data: { }, 
+    $.ajax({
+        type: 'GET',
+        url: config.gameserver+"/best/"+config.gameid+"/"+color(currentPlayer),
+        data: { },
         dataType: 'json',
-        success: function (json) { 
+        success: function (json) {
             //alert("success: "+json.bestmove);
             dropDisc(json.bestmove);
         },
         error: function(error) {
             alert("They don't move, error.status: "+error.status);
         }
-    });    
+    });
 }
 
 function tellThem(column) {
-    $.ajax({ 
-        type: 'GET', 
-        url: config.gameserver+"/move/"+config.gameid+"/"+color(currentPlayer)+"/"+column, 
-        data: { }, 
+    $.ajax({
+        type: 'GET',
+        url: config.gameserver+"/move/"+config.gameid+"/"+color(currentPlayer)+"/"+column,
+        data: { },
         dataType: 'json',
-        success: function (json) { 
+        success: function (json) {
             //alert(json.field);
         },
         error: function(error) {
             alert("Can't tell them, error.status: "+error.status);
         }
-    });    
+    });
 }
 
 function challengeThem(column) {
-    $.ajax({ 
-        type: 'GET', 
-        url: config.gameserver+"/new", 
-        data: { }, 
+    $.ajax({
+        type: 'GET',
+        url: config.gameserver+"/new",
+        data: { },
         dataType: 'json',
-        success: function (json) { 
+        success: function (json) {
             //alert(json.field);
             config.gameid = json.gameid;
             updateTitle();
@@ -120,7 +120,7 @@ function challengeThem(column) {
         error: function(error) {
             alert("Can't challenge them, error.status: "+error.status);
         }
-    });  
+    });
 }
 
 /**
