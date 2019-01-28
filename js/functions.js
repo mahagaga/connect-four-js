@@ -91,13 +91,14 @@ function letThemMakeAMove() {
     });
 }
 
-function tellThem(column) {
+function tellThem(column, callback) {
     $.ajax({
         type: 'GET',
         url: config.gameserver+"/move/"+config.gameid+"/"+color(currentPlayer)+"/"+column,
         data: { },
         dataType: 'json',
         success: function (json) {
+            callback();
             //alert(json.field);
         },
         error: function(error) {
@@ -375,33 +376,34 @@ function diagonalWin() {
 
 function dropDisc(x_pos) { //-> gameover:bool
     
-    tellThem(x_pos);
+    tellThem(x_pos, function() {
 
-    // Ensure the piece falls to the bottom of the column.
-    var y_pos = dropToBottom(x_pos, 0);
+        // Ensure the piece falls to the bottom of the column.
+        var y_pos = dropToBottom(x_pos, 0);
 
-    addDiscToBoard(currentPlayer, x_pos, y_pos);
-    printBoard();
+        addDiscToBoard(currentPlayer, x_pos, y_pos);
+        printBoard();
 
-    var gameover = false;
-    // Check to see if we have a winner.
-    if (verticalWin() || horizontalWin() || diagonalWin()) {
-        // Destroy our click listener to prevent further play.
-        $('.prefix').text(config.winPrefix);
-        $('#player').text(config[currentPlayer + "PlayerName"] === config.you ? "you" : "them");
-        gameover = true;
+        var gameover = false;
+        // Check to see if we have a winner.
+        if (verticalWin() || horizontalWin() || diagonalWin()) {
+            // Destroy our click listener to prevent further play.
+            $('.prefix').text(config.winPrefix);
+            $('#player').text(config[currentPlayer + "PlayerName"] === config.you ? "you" : "them");
+            gameover = true;
 
-    } else if (gameIsDraw()) {
-        // Destroy our click listener to prevent further play.
-        $('.message').text(config.drawMsg);
-        gameover = true;
-    }
-    
-    // prevent any further action if game is over 
-    if (gameover) {
-        $('.board button').unbind('click');
-        $('.play-again').show("slow");
-    } else { // ... otherwise just change the player
-        changePlayer();
-    }
+        } else if (gameIsDraw()) {
+            // Destroy our click listener to prevent further play.
+            $('.message').text(config.drawMsg);
+            gameover = true;
+        }
+
+        // prevent any further action if game is over
+        if (gameover) {
+            $('.board button').unbind('click');
+            $('.play-again').show("slow");
+        } else { // ... otherwise just change the player
+            changePlayer();
+        }
+    });
 }
