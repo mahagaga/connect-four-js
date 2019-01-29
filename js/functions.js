@@ -11,7 +11,6 @@ function closeModal() {
         case "black": config.redPlayerName = config.them; config.blackPlayerName = config.you; break; 
     }
     challengeThem();
-    updateTitle();
 }
 
 /**
@@ -77,49 +76,52 @@ function color(player) {
 }
 
 function letThemMakeAMove() {
-    $.ajax({ 
-        type: 'GET', 
-        url: "http://localhost:8095/best/"+color(currentPlayer), 
-        data: { }, 
+    $.ajax({
+        type: 'GET',
+        url: config.gameserver+"/best/"+config.gameid+"/"+color(currentPlayer),
+        data: { },
         dataType: 'json',
-        success: function (json) { 
+        success: function (json) {
             //alert("success: "+json.bestmove);
             dropDisc(json.bestmove);
         },
         error: function(error) {
             alert("They don't move, error.status: "+error.status);
         }
-    });    
+    });
 }
 
-function tellThem(column) {
-    $.ajax({ 
-        type: 'GET', 
-        url: "http://localhost:8095/move/"+color(currentPlayer)+"/"+column, 
-        data: { }, 
+function tellThem(column, callback) {
+    $.ajax({
+        type: 'GET',
+        url: config.gameserver+"/move/"+config.gameid+"/"+color(currentPlayer)+"/"+column,
+        data: { },
         dataType: 'json',
-        success: function (json) { 
+        success: function (json) {
+            callback();
             //alert(json.field);
         },
         error: function(error) {
             alert("Can't tell them, error.status: "+error.status);
         }
-    });    
+    });
 }
 
 function challengeThem(column) {
-    $.ajax({ 
-        type: 'GET', 
-        url: 'http://127.0.0.1:8095/new', 
-        data: { }, 
+    $.ajax({
+        type: 'GET',
+        url: config.gameserver+"/new",
+        data: { },
         dataType: 'json',
-        success: function (json) { 
+        success: function (json) {
             //alert(json.field);
+            config.gameid = json.gameid;
+            updateTitle();
         },
         error: function(error) {
             alert("Can't challenge them, error.status: "+error.status);
         }
-    });  
+    });
 }
 
 /**
@@ -374,32 +376,34 @@ function diagonalWin() {
 
 function dropDisc(x_pos) { //-> gameover:bool
     
-    tellThem(x_pos);
+    tellThem(x_pos, function() {
 
-    // Ensure the piece falls to the bottom of the column.
-    var y_pos = dropToBottom(x_pos, 0);
+        // Ensure the piece falls to the bottom of the column.
+        var y_pos = dropToBottom(x_pos, 0);
 
-    addDiscToBoard(currentPlayer, x_pos, y_pos);
-    printBoard();
+        addDiscToBoard(currentPlayer, x_pos, y_pos);
+        printBoard();
 
-    var gameover = false;
-    // Check to see if we have a winner.
-    if (verticalWin() || horizontalWin() || diagonalWin()) {
-        // Destroy our click listener to prevent further play.
-        $('.prefix').text(config.winPrefix);
-        gameover = true;
+        var gameover = false;
+        // Check to see if we have a winner.
+        if (verticalWin() || horizontalWin() || diagonalWin()) {
+            // Destroy our click listener to prevent further play.
+            $('.prefix').text(config.winPrefix);
+            $('#player').text(config[currentPlayer + "PlayerName"] === config.you ? "you" : "them");
+            gameover = true;
 
-    } else if (gameIsDraw()) {
-        // Destroy our click listener to prevent further play.
-        $('.message').text(config.drawMsg);
-        gameover = true;
-    }
-    
-    // prevent any further action if game is over 
-    if (gameover) {
-        $('.board button').unbind('click');
-        $('.play-again').show("slow");
-    } else { // ... otherwise just change the player
-        changePlayer();
-    }
+        } else if (gameIsDraw()) {
+            // Destroy our click listener to prevent further play.
+            $('.message').text(config.drawMsg);
+            gameover = true;
+        }
+
+        // prevent any further action if game is over
+        if (gameover) {
+            $('.board button').unbind('click');
+            $('.play-again').show("slow");
+        } else { // ... otherwise just change the player
+            changePlayer();
+        }
+    });
 }
